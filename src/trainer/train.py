@@ -31,6 +31,8 @@ def train(base_model_name,
           decay_all=0,
           **kwargs):
 
+    K.clear_session()
+
     # build NIMA model and load existing weights if they were provided in config
     nima = Nima(base_model_name, n_classes, learning_rate_dense, dropout_rate, decay=decay_dense)
     nima.build()
@@ -101,7 +103,6 @@ def train(base_model_name,
                                   max_q_size=30,
                                   callbacks=[tensorboard, model_checkpointer])
 
-    K.clear_session()
 
 
 if __name__ == '__main__':

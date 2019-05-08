@@ -28,9 +28,11 @@ def image_dir_to_json(img_dir, img_type='jpg'):
 
 def predict(model, data_generator):
     return model.predict_generator(data_generator, workers=8, use_multiprocessing=True, verbose=1)
+# predict generator is https://keras.io/models/model/
+# data_generator is nima's version of keras
+# #create data generator with this https://keras.io/preprocessing/image/
 
-
-def main(base_model_name, weights_file, image_source, predictions_file, img_format='jpg'):
+def main(base_model_name, weights_file=None, image_source=None, predictions_file=None, img_format='jpg'):
     # load samples
     if os.path.isfile(image_source):
         image_dir, samples = image_file_to_json(image_source)
@@ -40,8 +42,8 @@ def main(base_model_name, weights_file, image_source, predictions_file, img_form
 
     # build model and load weights
     nima = Nima(base_model_name, weights=None)
-    nima.build()
-    nima.nima_model.load_weights(weights_file)
+    nima.build() # handlers/model_builder.py
+    nima.nima_model.load_weights(weights_file)  # if we want to save weights and reload
 
     # initialize data generator
     data_generator = TestDataGenerator(samples, image_dir, 64, 10, nima.preprocessing_function(),
@@ -59,15 +61,7 @@ def main(base_model_name, weights_file, image_source, predictions_file, img_form
     if predictions_file is not None:
         save_json(samples, predictions_file)
 
-
 if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-b', '--base-model-name', help='CNN base model name', required=True)
-    parser.add_argument('-w', '--weights-file', help='path of weights file', required=True)
-    parser.add_argument('-is', '--image-source', help='image directory or file', required=True)
-    parser.add_argument('-pf', '--predictions-file', help='file with predictions', required=False, default=None)
-
-    args = parser.parse_args()
-
-    main(**args.__dict__)
+    main(base_model_name='MobileNet',
+         weights_file='models/MobileNet/weights_mobilenet_aesthetic_0.07.hdf5',
+        image_source= '/home/xandria/images/448616.jpg' )
